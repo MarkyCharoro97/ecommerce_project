@@ -1,0 +1,112 @@
+{% extends 'ecommerce/base.html' %}
+{% load static %}
+
+{% block title %}My Stores - eCommerce Platform{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 fw-bold text-gradient">
+                        <i class="fas fa-store me-2"></i>My Stores
+                    </h1>
+                    <p class="lead text-muted">Manage your stores and their settings</p>
+                </div>
+                <a href="{% url 'ecommerce:create_store' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Create New Store
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stores Grid -->
+    {% if stores %}
+        <div class="row g-4">
+            {% for store in stores %}
+            <div class="col-lg-6">
+                <div class="card h-100 hover-scale">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ store.name }}</h5>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'ecommerce:edit_store' store.id %}" class="btn btn-outline-primary" title="Edit Store">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'ecommerce:store_products' store.id %}" class="btn btn-outline-info" title="Manage Products">
+                                <i class="fas fa-box"></i>
+                            </a>
+                            <a href="{% url 'ecommerce:delete_store' store.id %}" class="btn btn-outline-danger" title="Delete Store">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ store.description }}</p>
+                        
+                        <div class="row text-center mb-3">
+                            <div class="col-4">
+                                <div class="border-end">
+                                    <h4 class="text-primary mb-0">{{ store.products.count }}</h4>
+                                    <small class="text-muted">Products</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="border-end">
+                                    <h4 class="text-success mb-0">{{ store.products.filter.is_active=True.count }}</h4>
+                                    <small class="text-muted">Active</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <h4 class="text-info mb-0">{{ store.products.aggregate.total_stock=Sum.quantity_in_stock.total_stock|default:0 }}</h4>
+                                <small class="text-muted">Total Stock</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-map-marker-alt me-1"></i>{{ store.address|truncatewords:10 }}
+                            </small><br>
+                            <small class="text-muted">
+                                <i class="fas fa-phone me-1"></i>{{ store.phone_number }}
+                            </small><br>
+                            <small class="text-muted">
+                                <i class="fas fa-envelope me-1"></i>{{ store.email }}
+                            </small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge {% if store.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                {% if store.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                            <small class="text-muted">Created {{ store.created_at|date:"M d, Y" }}</small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'ecommerce:create_product' store.id %}" class="btn btn-success">
+                                <i class="fas fa-plus me-1"></i>Add Product
+                            </a>
+                            <a href="{% url 'ecommerce:store_products' store.id %}" class="btn btn-primary">
+                                <i class="fas fa-cog me-1"></i>Manage
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-store fa-5x text-muted mb-4"></i>
+            <h3 class="text-muted">No stores yet</h3>
+            <p class="text-muted mb-4">Create your first store to start selling products on our platform.</p>
+            <a href="{% url 'ecommerce:create_store' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus me-2"></i>Create Your First Store
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
